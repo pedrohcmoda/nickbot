@@ -1,26 +1,25 @@
 # This example requires the 'message_content' privileged intents
 
-import os
 import discord
-from discord.ext import commands
+import os
+import asyncio
+
+client = discord.Bot(intents=discord.Intents.all())
 
 
-intents = discord.Intents.default()
-intents.message_content = True
-bot = commands.Bot(command_prefix='!', intents=intents)
+@client.event
+async def on_member_join(member):
+    await member.create_dm()
+    print("Hello, {member.id}")
+    await member.dm_channel.send(f'Olá {member.name}, bem vindo ao server, manda teu nick ai kk!')
+    try:
+        nickname = await client.wait_for('message', check=lambda message: message.author == member and message.channel == member.dm_channel, timeout=60)
+    except asyncio.TimeoutError:
+        await member.dm_channel.send(f'Você não respondeu a tempo. Tente novamente mais tarde.')
+    else:
+        await member.edit(nick=nickname.content)
+        
+client.event(on_member_join)
 
 
-@bot.event
-async def on_ready():
-    print(f"Logged in as {bot.user}")
-
-@bot.command()
-async def ping(ctx):
-    await ctx.send('pong')
-
-@bot.command()
-async def hello(ctx):
-    await ctx.send("Choo choo! 🚅")
-
-
-bot.run(os.environ["DISCORD_TOKEN"])
+client.run(os.environ["DISCORD_TOKEN"])

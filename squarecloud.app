@@ -1,0 +1,5 @@
+DISPLAY_NAME=Nicker
+DESCRIPTION=Nicks
+MAIN=main.py
+MEMORY=128
+VERSION=recommended
